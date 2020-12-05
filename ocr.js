@@ -1,9 +1,8 @@
 const submitButton = document.getElementById("submitButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
-var posX, posY, newDiv;
-let x1, x2, dropped = true;
-var divLayer;
+let posX, posY, newDiv, dropped = true, x1, y1, divHeight, divWidth, divLayer;
+const dataToSend = new Array;
 
 setTimeout(() => {
   // div which will be covering the image
@@ -19,7 +18,7 @@ setTimeout(() => {
     posY = e.pageY - 10;
     //coordinates relative to image(coordinates to send)
     x1 = posX - docImage.x;
-    x2 = posY - docImage.y;
+    y1 = posY - docImage.y;
     newDiv = document.createElement('div');
     newDiv.classList.add("new-div");
     //div-s real coordinates are relative to this page
@@ -29,16 +28,24 @@ setTimeout(() => {
   };
   divLayer.onmousemove = function (e) {
     if (!dropped) {
-      console.log("moved");
-      let divWidth = e.pageX - posX;
-      let divHeight = e.pageY - posY;
+      divWidth = e.pageX - posX;
+      divHeight = e.pageY - posY;
       newDiv.style.width = divWidth + "px";
       newDiv.style.height = divHeight + "px";
     }
   };
   document.onmouseup = function (e) {
-    if (newDiv.style.height !== "0px" && newDiv.style.width !== "0px") {
+    if (newDiv.style.height !== "" && newDiv.style.width !== "") {
       dropped = true;
+      //Create new JSON object and add it to array
+      const parameters = {
+        left : x1,
+        top : y1,
+        height : newDiv.style.height,
+        width : newDiv.style.width,
+      }
+      dataToSend.push(parameters);
+      console.log(dataToSend);
     } else {
       container.removeChild(container.lastElementChild);
     }
