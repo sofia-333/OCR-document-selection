@@ -1,17 +1,13 @@
 .container{
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column; */
   position: relative;
 }
 .doc-image{
-  width: 50%;
+  width: 60%;
   position: absolute;
 }
 .new-div{
   /* background: black; */
-  border: red solid 4px;
+  border: red solid 2px;
   position: absolute;
 }
 .div-layer{
@@ -20,5 +16,5 @@
 }
 #submitButton{
   position: relative;
-  
+  left: 80%;
 }

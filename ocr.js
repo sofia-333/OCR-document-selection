@@ -4,7 +4,7 @@ const container = document.getElementsByClassName("container")[0];
 let posX, posY, newDiv, dropped = true, x1, y1, divHeight, divWidth, divLayer;
 const dataToSend = new Array;
 
-setTimeout(() => {
+docImage.onload = function() {
   // div which will be covering the image
   divLayer = document.getElementsByClassName("div-layer")[0];
   divLayer.style.width = docImage.width + "px";
@@ -28,8 +28,8 @@ setTimeout(() => {
   };
   divLayer.onmousemove = function (e) {
     if (!dropped) {
-      divWidth = e.pageX - posX;
-      divHeight = e.pageY - posY;
+      divWidth = e.pageX - posX - 10;
+      divHeight = e.pageY - posY - 10;
       newDiv.style.width = divWidth + "px";
       newDiv.style.height = divHeight + "px";
     }
@@ -43,11 +43,15 @@ setTimeout(() => {
         top : y1,
         height : newDiv.style.height,
         width : newDiv.style.width,
-      }
+      };
       dataToSend.push(parameters);
-      console.log(dataToSend);
     } else {
       container.removeChild(container.lastElementChild);
     }
   };
-}, 100);
+
+  submitButton.addEventListener('click', (e) => {
+    console.log(dataToSend);
+  });
+
+};
