@@ -2,7 +2,7 @@ const submitButton = document.getElementById("submitButton");
 const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
-let posX, posY, newDiv, dropped = true, x1, y1, divHeight, divWidth, divLayer;
+let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer,outerDiv;
 const dataToSend = new Array;
 
 docImage.onload = function () {
@@ -14,7 +14,7 @@ docImage.onload = function () {
   divLayer.y = docImage.y;
 
   divLayer.onmousedown = function (e) {
-    dropped = false;
+    created = false;
     posX = e.pageX - 10;
     posY = e.pageY - 10;
     //coordinates relative to image(coordinates to send)
@@ -23,12 +23,18 @@ docImage.onload = function () {
     newDiv = document.createElement('div');
     newDiv.classList.add("new-div");
     //div-s real coordinates are relative to this page
-    newDiv.style.left = posX + "px";
-    newDiv.style.top = posY + "px";
-    container.appendChild(newDiv);
+    // newDiv.style.left = posX + "px";
+    // newDiv.style.top = posY + "px";
+    //creating div,which will contain 1.new red div 2.delete button
+    outerDiv = document.createElement('div');
+    outerDiv.classList.add("outer-div");
+    outerDiv.style.left = posX + "px";
+    outerDiv.style.top = posY + "px";
+    outerDiv.appendChild(newDiv);
+    container.appendChild(outerDiv);
   };
   divLayer.onmousemove = function (e) {
-    if (!dropped) {
+    if (!created) {
       divWidth = e.pageX - posX - 10;
       divHeight = e.pageY - posY - 10;
       newDiv.style.width = divWidth + "px";
@@ -37,8 +43,8 @@ docImage.onload = function () {
     }
   };
   document.onmouseup = function (e) {
-    //!dropped - means that new dropdown won't be created when click on div
-    if (newDiv.style.height !== "" && newDiv.style.width !== "" && !dropped) {
+    //if(!created) - means that new dropdown won't be created when click on div
+    if (newDiv.style.height !== "" && newDiv.style.width !== "" && !created) {
       //creating dropdowns
       const dropdown = document.createElement("select");
       dropdown.classList.add("dropdown");
@@ -51,19 +57,33 @@ docImage.onload = function () {
         dropdown.options.add(option);
       }
       newDiv.appendChild(dropdown);
-      dropped = true;
+      // creating delete buttons
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add("delete-button");
+      deleteButton.style.left = divWidth + 1 + "px";
+      deleteButton.style.top = -1 + "px";
+      deleteButton.innerText = "x";
+      outerDiv.appendChild(deleteButton);
+      created = true;
+      
+      const delButtons = document.querySelectorAll(".delete-button");
+      delButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          container.removeChild(btn.parentElement);
+        });
+      });
       //Create new JSON object and add it to array
-      const parameters = {
-        left: x1,
-        top: y1,
-        height: newDiv.style.height,
-        width: newDiv.style.width,
-      };
-      dataToSend.push(parameters);
+      // const parameters = {
+      //   left: x1,
+      //   top: y1,
+      //   height: newDiv.style.height,
+      //   width: newDiv.style.width,
+      // };
+      // dataToSend.push(parameters);
     }
-    //else {
-    //   container.removeChild(container.lastElementChild);
-    // }
+    else {
+      container.removeChild(container.lastElementChild);
+    }
   };
 
   submitButton.addEventListener('click', (e) => {

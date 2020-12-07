@@ -7,18 +7,31 @@
 }
 .new-div{
   /* background: black; */
-  border: red solid 2px;
+  border: red solid 1px;
   position: absolute;
+}
+.new-div:hover{
+
 }
 .div-layer{
   position: absolute;
   /* background-color: transparent; */
 }
-#submitButton,#deleteButton{
+#submitButton{
   position: relative;
   left: 80%;
 }
 .dropdown{
-  border: red solid 2px;
+  border: red solid 1px;
   position:relative;
+  text-align:center;
+}
+.delete-button{
+  border: 2px solid red;
+  position: relative;
+  text-align:left;
+  background-color:#f1f1f1;
+}
+.outer-div{
+  position:absolute;
 }
