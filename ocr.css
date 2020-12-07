@@ -14,7 +14,11 @@
   position: absolute;
   /* background-color: transparent; */
 }
-#submitButton{
+#submitButton,#deleteButton{
   position: relative;
   left: 80%;
+}
+.dropdown{
+  border: red solid 2px;
+  position:relative;
 }
