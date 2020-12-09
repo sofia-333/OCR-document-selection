@@ -2,7 +2,8 @@ const submitButton = document.getElementById("submitButton");
 const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
-let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer,outerDiv;
+let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv;
+let dragBtnParent, moved = true, dragPosX, pos1, dragPosY, pos2;
 const dataToSend = new Array;
 
 docImage.onload = () => {
@@ -68,7 +69,7 @@ docImage.onload = () => {
       const delButtons = document.querySelectorAll(".delete-button");
       delButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-          if(e.target === btn && btn.parentElement.parentElement === container){
+          if (e.target === btn && btn.parentElement.parentElement === container) {
             container.removeChild(btn.parentElement);
           }
         });
@@ -83,15 +84,45 @@ docImage.onload = () => {
       dragButton.getElementsByTagName('i')[0].classList.add("fas");
       dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
       outerDiv.appendChild(dragButton);
-      created = true; //new red div is created
       //drag
       const dragButtons = document.querySelectorAll(".drag-button");
       dragButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          console.log("drag pressed");
+        btn.addEventListener('mousedown', (e) => {
+          moved = false;
+          dragPosX = e.clientX;
+          dragPosY = e.clientY;
+          //console.log(e.target, e.target.parentElement);
+          //if we click on icon(inside the button) --> parent is dragButton; if we click on dragButton --> parent is outerdiv;
+          //we need to move outer div; 1)outerDiv = e.target.pareentElement.parentElement 2)outerDiv = e.target.pareentElement
+          if (e.target.tagName === 'BUTTON') {
+            console.log("B");
+            dragBtnParent = e.target.parentElement;
+          }
+          else if (e.target.tagName === 'I') {
+            console.log("i");
+            dragBtnParent = e.target.parentElement.parentElement;
+          }
+          console.log(dragBtnParent);
+        });
+        btn.addEventListener('mousemove', (e) => {
+          if (!moved) {
+            console.log(dragBtnParent);
+            dragPosX = pos1 - e.clientX;
+            dragPosY = pos2 - e.clientY;
+            pos1 = e.clientX;
+            pos2 = e.clientY;
+            dragBtnParent.style.left = dragBtnParent.offsetLeft - dragPosX + "px";
+            dragBtnParent.style.top = dragBtnParent.offsetTop - dragPosY + "px";
+          }
+        });
+        document.addEventListener('mouseup', (e) => {
+          moved = true;
+          //btn.onmousemove = null;
+          //btn.onmousedown = null;
         });
       });
 
+      created = true; //new red div is created
       //Create new JSON object and add it to array
       // const parameters = {
       //   left: x1,
@@ -111,4 +142,4 @@ docImage.onload = () => {
   });
 
 };
- 
+
