@@ -5,7 +5,7 @@ const container = document.getElementsByClassName("container")[0];
 let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer,outerDiv;
 const dataToSend = new Array;
 
-docImage.onload = function () {
+docImage.onload = () => {
   // div which will be covering the image
   divLayer = document.getElementsByClassName("div-layer")[0];
   divLayer.style.width = docImage.width + "px";
@@ -61,17 +61,37 @@ docImage.onload = function () {
       const deleteButton = document.createElement('button');
       deleteButton.classList.add("delete-button");
       deleteButton.style.left = divWidth + 1 + "px";
-      deleteButton.style.top = -1 + "px";
+      deleteButton.style.top = -5 + "px";
       deleteButton.innerText = "x";
       outerDiv.appendChild(deleteButton);
-      created = true;
-      
+      //click on delete button
       const delButtons = document.querySelectorAll(".delete-button");
       delButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-          container.removeChild(btn.parentElement);
+          if(e.target === btn && btn.parentElement.parentElement === container){
+            container.removeChild(btn.parentElement);
+          }
         });
       });
+      //creating drag button
+      const dragButton = document.createElement('button');
+      dragButton.classList.add("drag-button");
+      dragButton.style.left = divWidth + 1 + "px";
+      dragButton.style.top = -5 + "px";
+      //drag icon
+      dragButton.appendChild(document.createElement('i'));
+      dragButton.getElementsByTagName('i')[0].classList.add("fas");
+      dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
+      outerDiv.appendChild(dragButton);
+      created = true; //new red div is created
+      //drag
+      const dragButtons = document.querySelectorAll(".drag-button");
+      dragButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          console.log("drag pressed");
+        });
+      });
+
       //Create new JSON object and add it to array
       // const parameters = {
       //   left: x1,
@@ -81,7 +101,7 @@ docImage.onload = function () {
       // };
       // dataToSend.push(parameters);
     }
-    else {
+    else if (newDiv.style.height === "" && newDiv.style.width === "") {
       container.removeChild(container.lastElementChild);
     }
   };
@@ -91,3 +111,4 @@ docImage.onload = function () {
   });
 
 };
+ 
