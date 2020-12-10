@@ -3,7 +3,7 @@ const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
 let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv;
-let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY,isResizing;
+let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY, isResizing;
 const dataToSend = new Array;
 
 docImage.onload = () => {
@@ -134,7 +134,7 @@ docImage.onload = () => {
         //resizing
 
         const resizers = document.querySelectorAll(".resizers");
-        let currentResizer, currentDropdown, currentDiv, currentDelete,currentDrag;
+        let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag;
         resizers.forEach((resizer) => {
           resizer.addEventListener("mousedown", mousedown);
           function mousedown(e) {
@@ -157,14 +157,14 @@ docImage.onload = () => {
               if (currentResizer.classList.contains("se")) {
                 currentDiv.style.width = divToResize.width - (prevX - e.clientX) + "px";
                 currentDiv.style.height = divToResize.height - (prevY - e.clientY) + "px";
-                
+
                 currentDropdown.style.width = divToResize.width - (prevX - e.clientX) + "px";
                 currentDropdown.style.height = divToResize.height - (prevY - e.clientY) + "px";
               } else if (currentResizer.classList.contains("sw")) {
                 currentDiv.style.width = divToResize.width + (prevX - e.clientX) + "px";
                 currentDiv.style.height = divToResize.height - (prevY - e.clientY) + "px";
                 currentDiv.style.left = divToResize.left - (prevX - e.clientX) + "px";
-                
+
                 currentDropdown.style.width = divToResize.width + (prevX - e.clientX) + "px";
                 currentDropdown.style.height = divToResize.height - (prevY - e.clientY) + "px";
                 currentDropdown.style.left = divToResize.left - (prevX - e.clientX) + "px";
@@ -172,7 +172,7 @@ docImage.onload = () => {
                 curentDiv.style.width = divToResize.width - (prevX - e.clientX) + "px";
                 curentDiv.style.height = divToResize.height + (prevY - e.clientY) + "px";
                 curentDiv.style.top = divToResize.top - (prevY - e.clientY) + "px";
-                
+
                 currentDropdown.style.width = divToResize.width - (prevX - e.clientX) + "px";
                 currentDropdown.style.height = divToResize.height + (prevY - e.clientY) + "px";
                 currentDropdown.style.top = divToResize.top - (prevY - e.clientY) + "px";
@@ -189,7 +189,7 @@ docImage.onload = () => {
               }
               currentDelete.style.left = divToResize.width + 1 + "px";
               currentDelete.style.top = - 5 + "px";
-                
+
               currentDrag.style.left = divToResize.width + 1 + "px";
               currentDrag.style.top = -5 + "px";
 
