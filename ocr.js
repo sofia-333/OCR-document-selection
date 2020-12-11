@@ -154,41 +154,41 @@ docImage.onload = () => {
 
             function mousemove(e) {
               const divToResize = currentDiv.getBoundingClientRect();
-              
+
               //if(isResizing){
-                
-                if (currentResizer.classList.contains("se")) {
-                  currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
-                  currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
 
-                } else if (currentResizer.classList.contains("sw")) {
-                  console.log(currentDiv.style.left);
-                  currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
-                  currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-                  currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
-                  console.log(currentDiv.style.left);
+              if (currentResizer.classList.contains("se")) {
+                currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
+                currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
 
-                } else if (currentResizer.classList.contains("ne")) {
-                  console.log("ne");
-                  currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) + "px";
-                  currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
-                  currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
-                } else {
-                  console.log("nw");
-                  currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
-                  currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
-                  currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
-                  currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
-                }
-                currentDelete.style.left = divToResize.width + 1 + "px";
-                currentDelete.style.top = - 5 + "px";
+              } else if (currentResizer.classList.contains("sw")) {
+                console.log(currentDiv.style.left);
+                currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
+                currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
+                currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
+                console.log(currentDiv.style.left);
 
-                currentDrag.style.left = divToResize.width + 1 + "px";
-                currentDrag.style.top = -5 + "px";
+              } else if (currentResizer.classList.contains("ne")) {
+                console.log("ne");
+                currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) + "px";
+                currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
+                currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
+              } else {
+                console.log("nw");
+                currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
+                currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
+                currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
+                currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
+              }
+              currentDelete.style.left = divToResize.width + 1 + "px";
+              currentDelete.style.top = - 5 + "px";
 
-                prevX = e.pageX;
-                prevY = e.pageY;
-             // }
+              currentDrag.style.left = divToResize.width + 1 + "px";
+              currentDrag.style.top = -5 + "px";
+
+              prevX = e.pageX;
+              prevY = e.pageY;
+              // }
             }
 
             function mouseup() {
