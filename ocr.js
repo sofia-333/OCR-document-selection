@@ -44,26 +44,9 @@ docImage.onload = () => {
     window.onmouseup = function (e) {
       //if(!created) - means that new dropdown won't be created when click on div
       if (newDiv.style.height !== "" && newDiv.style.width !== "" && !created) {
-        //creating dropdowns
-        const dropdown = document.createElement("select");
-        dropdown.classList.add("dropdown");
-        dropdown.style.width = divWidth + "px";
-        dropdown.style.height = divHeight + "px";
-        for (let i = 0; i < 3; i++) {
-          let option = new Option;
-          option.text = `something ${i}`;
-          option.value = 'somethings value';
-          dropdown.options.add(option);
-        }
-        newDiv.appendChild(dropdown);
-        // creating delete buttons
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add("delete-button");
-        deleteButton.style.left = divWidth + 1 + "px";
-        deleteButton.style.top = -5 + "px";
-        deleteButton.innerText = "x";
-        outerDiv.appendChild(deleteButton);
+        CreateDropdown(newDiv);
         //click on delete button
+        CreateDeleteButton(outerDiv);
         const delButtons = document.querySelectorAll(".delete-button");
         delButtons.forEach(btn => {
           btn.addEventListener('click', (e) => {
@@ -72,104 +55,16 @@ docImage.onload = () => {
             }
           });
         });
-        //creating drag button
-        const dragButton = document.createElement('button');
-        dragButton.classList.add("drag-button");
-        dragButton.style.left = divWidth + 1 + "px";
-        dragButton.style.top = -5 + "px";
-        //drag icon
-        dragButton.appendChild(document.createElement('i'));
-        dragButton.getElementsByTagName('i')[0].classList.add("fas");
-        dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
-        outerDiv.appendChild(dragButton);
         //dragging
+        CreateDragButton(outerDiv);
         const dragButtons = document.querySelectorAll(".drag-button");
-        dragButtons.forEach(btn => {
-          btn.addEventListener('mousedown', (e) => {
-            moved = false;
-            oldDragPosX = e.pageX;
-            oldDragPosY = e.pageY;
-            //if we click on icon(inside the button) --> parent is dragButton; if we click on dragButton --> parent is outerdiv;
-            //we need to move outer div; 1)outerDiv = e.target.pareentElement.parentElement 2)outerDiv = e.target.pareentElement
-            if (e.target.tagName === 'BUTTON') {
-              dragBtnParent = e.target.parentElement;
-            }
-            else if (e.target.tagName === 'I') {
-              dragBtnParent = e.target.parentElement.parentElement;
-            }
-
-            window.addEventListener('mousemove', (e) => {
-              if (!moved && !isResizing) {
-                dragPosX = oldDragPosX - e.pageX;
-                dragPosY = oldDragPosY - e.pageY;
-                oldDragPosX = e.pageX;
-                oldDragPosY = e.pageY;
-                dragBtnParent.style.left = dragBtnParent.offsetLeft - dragPosX + "px";
-                dragBtnParent.style.top = dragBtnParent.offsetTop - dragPosY + "px";
-              }
-            });
-            window.addEventListener('mouseup', (e) => {
-              moved = true;
-            });
-          });
-        });
-        //creating resize points
-        //newDiv.classList.add("resizable");
-        CreateResizePoints(newDiv);
-
+        dragButtons.forEach(btn => btn.addEventListener('mousedown', DragMousedown));
+        
         //resizing
-
+        CreateResizePoints(newDiv);
         const resizers = document.querySelectorAll(".resizers");
         let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag;
-        resizers.forEach((resizer) => {
-          resizer.addEventListener("mousedown", mousedown);
-          function mousedown(e) {
-            currentResizer = e.target;
-            currentDiv = e.target.parentElement;
-            currentDropdown = e.target.parentElement.getElementsByClassName("dropdown")[0];
-            currentDelete = e.target.parentElement.parentElement.getElementsByClassName("delete-button")[0];
-            currentDrag = e.target.parentElement.parentElement.getElementsByClassName("drag-button")[0];
-            //console.log(currentDiv);
-            isResizing = true;
-
-            let prevX = e.pageX;
-            let prevY = e.pageY;
-
-            window.addEventListener("mousemove", mousemove);
-            window.addEventListener("mouseup", mouseup);
-
-            function mousemove(e) {
-              const divToResize = currentDiv.getBoundingClientRect();
-
-              // console.log(divToResize);
-              const initialRight = divToResize.right;
-              if (currentResizer.classList.contains("se")) {
-                SeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
-              }
-              else if (currentResizer.classList.contains("sw")) {
-                SwResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY);
-              }
-              else if (currentResizer.classList.contains("ne")) {
-                NeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
-              }
-              else {
-                console.log("nw");
-                currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
-                currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
-                //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
-                //currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
-              }
-              prevX = e.pageX;
-              prevY = e.pageY;
-            }
-
-            function mouseup() {
-              window.removeEventListener("mousemove", mousemove);
-              window.removeEventListener("mouseup", mouseup);
-              isResizing = false;
-            }
-          }
-        });
+        resizers.forEach((resizer) => resizer.addEventListener("mousedown", ResizeMousedown));
         created = true; //new red div is created
       }
       else if (newDiv.style.height === "" && newDiv.style.width === "") {
@@ -177,10 +72,109 @@ docImage.onload = () => {
       }
     };
 
-    submitButton.addEventListener('click', (e) => {
-      console.log(dataToSend);
-    });
+    submitButton.addEventListener('click', (e) => console.log(dataToSend));
   };
+  function CreateDropdown(newDiv){
+    const dropdown = document.createElement("select");
+    dropdown.classList.add("dropdown");
+    dropdown.style.width = divWidth + "px";
+    dropdown.style.height = divHeight + "px";
+    for (let i = 0; i < 3; i++) {
+      let option = new Option;
+      option.text = `something ${i}`;
+      option.value = 'somethings value';
+      dropdown.options.add(option);
+    }
+    newDiv.appendChild(dropdown); 
+  }
+  function CreateDeleteButton(outerDiv){
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add("delete-button");
+    deleteButton.style.left = divWidth + 1 + "px";
+    deleteButton.style.top = -5 + "px";
+    deleteButton.innerText = "x";
+    outerDiv.appendChild(deleteButton);
+  }
+  function CreateDragButton(outerDiv){
+    const dragButton = document.createElement('button');
+    dragButton.classList.add("drag-button");
+    dragButton.style.left = divWidth + 1 + "px";
+    dragButton.style.top = -5 + "px";
+    //drag icon
+    dragButton.appendChild(document.createElement('i'));
+    dragButton.getElementsByTagName('i')[0].classList.add("fas");
+    dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
+    outerDiv.appendChild(dragButton);  
+  }
+  function DragMousedown(e){
+    moved = false;
+    oldDragPosX = e.pageX;
+    oldDragPosY = e.pageY;
+    //if we click on icon(inside the button) --> parent is dragButton; if we click on dragButton --> parent is outerdiv;
+    //we need to move outer div; 1)outerDiv = e.target.pareentElement.parentElement 2)outerDiv = e.target.pareentElement
+    if (e.target.tagName === 'BUTTON') {
+      dragBtnParent = e.target.parentElement;
+    }
+    else if (e.target.tagName === 'I') {
+      dragBtnParent = e.target.parentElement.parentElement;
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      if (!moved && !isResizing) {
+        dragPosX = oldDragPosX - e.pageX;
+        dragPosY = oldDragPosY - e.pageY;
+        oldDragPosX = e.pageX;
+        oldDragPosY = e.pageY;
+        dragBtnParent.style.left = dragBtnParent.offsetLeft - dragPosX + "px";
+        dragBtnParent.style.top = dragBtnParent.offsetTop - dragPosY + "px";
+      }
+    });
+    window.addEventListener('mouseup', (e) => {
+      moved = true;
+    });
+  }
+  function ResizeMousedown(e) {
+    currentResizer = e.target;
+    currentDiv = e.target.parentElement;
+    currentDropdown = e.target.parentElement.getElementsByClassName("dropdown")[0];
+    currentDelete = e.target.parentElement.parentElement.getElementsByClassName("delete-button")[0];
+    currentDrag = e.target.parentElement.parentElement.getElementsByClassName("drag-button")[0];
+    //console.log(currentDiv);
+    isResizing = true;
+
+    let prevX = e.pageX;
+    let prevY = e.pageY;
+
+    window.addEventListener("mousemove", mousemove);
+    window.addEventListener("mouseup", mouseup);
+
+    function mousemove(e) {
+      const divToResize = currentDiv.getBoundingClientRect();
+
+      // console.log(divToResize);
+      const initialRight = divToResize.right;
+      if (currentResizer.classList.contains("se")) {
+        SeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+      }
+      else if (currentResizer.classList.contains("sw")) {
+        SwResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY);
+      }
+      else if (currentResizer.classList.contains("ne")) {
+        NeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+      }
+      else {
+        NwResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+      }
+      prevX = e.pageX;
+      prevY = e.pageY;
+    }
+
+    function mouseup() {
+      window.removeEventListener("mousemove", mousemove);
+      window.removeEventListener("mouseup", mouseup);
+      isResizing = false;
+    }
+  }
   function CreateResizePoints(newDiv){
     let res_se = document.createElement('div');
     res_se.classList.add("resizers");
@@ -224,6 +218,13 @@ docImage.onload = () => {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
     //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
+  }
+  function NwResize(e,divToResize, currentDiv, currentDropdown,  prevX, prevY, currentDelete, currentDrag){
+    console.log("nw");
+    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
+    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
+    //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
+    //currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
   }
 };
 
