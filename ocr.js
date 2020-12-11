@@ -8,11 +8,7 @@ const dataToSend = new Array;
 
 docImage.onload = () => {
   // div which will be covering the image
-  divLayer = document.getElementsByClassName("div-layer")[0];
-  divLayer.style.width = docImage.width + "px";
-  divLayer.style.height = docImage.height + "px";
-  divLayer.x = docImage.x;
-  divLayer.y = docImage.y;
+  CreateDivLayer(docImage);
 
   divLayer.onmousedown = function (e) {
     created = false;
@@ -25,12 +21,7 @@ docImage.onload = () => {
     newDiv.classList.add("new-div");
 
     //creating div,which will contain 1.new red div 2.delete button
-    outerDiv = document.createElement('div');
-    outerDiv.classList.add("outer-div");
-    outerDiv.style.left = posX + "px";
-    outerDiv.style.top = posY + "px";
-    outerDiv.appendChild(newDiv);
-    container.appendChild(outerDiv);
+    CreateOuterDiv(newDiv);
 
     divLayer.onmousemove = function (e) {
       if (!created && !isResizing) {
@@ -40,40 +31,44 @@ docImage.onload = () => {
         newDiv.style.height = divHeight + "px";
 
       }
-    };
+    };  
     window.onmouseup = function (e) {
       //if(!created) - means that new dropdown won't be created when click on div
       if (newDiv.style.height !== "" && newDiv.style.width !== "" && !created) {
         CreateDropdown(newDiv);
         //click on delete button
         CreateDeleteButton(outerDiv);
-        const delButtons = document.querySelectorAll(".delete-button");
-        delButtons.forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            if (e.target === btn && btn.parentElement.parentElement === container) {
-              container.removeChild(btn.parentElement);
-            }
-          });
-        });
+        DeleteDiv(container);
         //dragging
         CreateDragButton(outerDiv);
         const dragButtons = document.querySelectorAll(".drag-button");
         dragButtons.forEach(btn => btn.addEventListener('mousedown', DragMousedown));
-
         //resizing
         CreateResizePoints(newDiv);
-        const resizers = document.querySelectorAll(".resizers");
-        let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag;
-        resizers.forEach((resizer) => resizer.addEventListener("mousedown", ResizeMousedown));
+        ResizeDiv();
         created = true; //new red div is created
       }
       else if (newDiv.style.height === "" && newDiv.style.width === "") {
         container.removeChild(container.lastElementChild);
       }
     };
-
     submitButton.addEventListener('click', (e) => console.log(dataToSend));
   };
+  function CreateDivLayer(docImage) {
+    divLayer = document.getElementsByClassName("div-layer")[0];
+    divLayer.style.width = docImage.width + "px";
+    divLayer.style.height = docImage.height + "px";
+    divLayer.x = docImage.x;
+    divLayer.y = docImage.y;
+  }
+  function CreateOuterDiv(newDiv){
+    outerDiv = document.createElement('div');
+    outerDiv.classList.add("outer-div");
+    outerDiv.style.left = posX + "px";
+    outerDiv.style.top = posY + "px";
+    outerDiv.appendChild(newDiv);
+    container.appendChild(outerDiv);
+  }
   function CreateDropdown(newDiv) {
     const dropdown = document.createElement("select");
     dropdown.classList.add("dropdown");
@@ -94,6 +89,16 @@ docImage.onload = () => {
     deleteButton.style.top = -5 + "px";
     deleteButton.innerText = "x";
     outerDiv.appendChild(deleteButton);
+  }
+  function DeleteDiv(container) {
+    const delButtons = document.querySelectorAll(".delete-button");
+    delButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (e.target === btn && btn.parentElement.parentElement === container) {
+          container.removeChild(btn.parentElement);
+        }
+      });
+    });
   }
   function CreateDragButton(outerDiv) {
     const dragButton = document.createElement('button');
@@ -132,6 +137,29 @@ docImage.onload = () => {
     window.addEventListener('mouseup', (e) => {
       moved = true;
     });
+  }
+  function CreateResizePoints(newDiv) {
+    let res_se = document.createElement('div');
+    res_se.classList.add("resizers");
+    res_se.classList.add("se");
+    newDiv.appendChild(res_se);
+    let res_ne = document.createElement('div');
+    res_ne.classList.add("resizers");
+    res_ne.classList.add("ne");
+    newDiv.appendChild(res_ne);
+    let res_sw = document.createElement('div');
+    res_sw.classList.add("resizers");
+    res_sw.classList.add("sw");
+    newDiv.appendChild(res_sw);
+    let res_nw = document.createElement('div');
+    res_nw.classList.add("resizers");
+    res_nw.classList.add("nw");
+    newDiv.appendChild(res_nw);
+  }
+  function ResizeDiv() {
+    const resizers = document.querySelectorAll(".resizers");
+    let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag;
+    resizers.forEach((resizer) => resizer.addEventListener("mousedown", ResizeMousedown));
   }
   function ResizeMousedown(e) {
     currentResizer = e.target;
@@ -175,24 +203,6 @@ docImage.onload = () => {
       isResizing = false;
     }
   }
-  function CreateResizePoints(newDiv) {
-    let res_se = document.createElement('div');
-    res_se.classList.add("resizers");
-    res_se.classList.add("se");
-    newDiv.appendChild(res_se);
-    let res_ne = document.createElement('div');
-    res_ne.classList.add("resizers");
-    res_ne.classList.add("ne");
-    newDiv.appendChild(res_ne);
-    let res_sw = document.createElement('div');
-    res_sw.classList.add("resizers");
-    res_sw.classList.add("sw");
-    newDiv.appendChild(res_sw);
-    let res_nw = document.createElement('div');
-    res_nw.classList.add("resizers");
-    res_nw.classList.add("nw");
-    newDiv.appendChild(res_nw);
-  }
   function SeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
@@ -215,16 +225,27 @@ docImage.onload = () => {
   }
   function NeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     console.log("ne");
-    currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) + "px";
-    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
-    //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
+    currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
+    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) - 2 + "px";
+    if (parseInt(currentDiv.style.top)) {
+      currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
+    }
+    else {
+      currentDiv.style.top = e.pageY - prevY + "px";
+    }
   }
   function NwResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     console.log("nw");
     currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
-    //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
-    //currentDiv.style.left = currentDropdown.style.left = divToResize.left - (prevX - e.pageX) + "px";
+    if (parseInt(currentDiv.style.top)) {
+      currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
+      currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
+    }
+    else {
+      currentDiv.style.top = e.pageY - prevY + "px";
+      currentDiv.style.left = e.pageX - prevX + "px";
+    }
   }
 };
 
