@@ -59,7 +59,7 @@ docImage.onload = () => {
         CreateDragButton(outerDiv);
         const dragButtons = document.querySelectorAll(".drag-button");
         dragButtons.forEach(btn => btn.addEventListener('mousedown', DragMousedown));
-        
+
         //resizing
         CreateResizePoints(newDiv);
         const resizers = document.querySelectorAll(".resizers");
@@ -74,7 +74,7 @@ docImage.onload = () => {
 
     submitButton.addEventListener('click', (e) => console.log(dataToSend));
   };
-  function CreateDropdown(newDiv){
+  function CreateDropdown(newDiv) {
     const dropdown = document.createElement("select");
     dropdown.classList.add("dropdown");
     dropdown.style.width = divWidth + "px";
@@ -85,9 +85,9 @@ docImage.onload = () => {
       option.value = 'somethings value';
       dropdown.options.add(option);
     }
-    newDiv.appendChild(dropdown); 
+    newDiv.appendChild(dropdown);
   }
-  function CreateDeleteButton(outerDiv){
+  function CreateDeleteButton(outerDiv) {
     const deleteButton = document.createElement('button');
     deleteButton.classList.add("delete-button");
     deleteButton.style.left = divWidth + 1 + "px";
@@ -95,7 +95,7 @@ docImage.onload = () => {
     deleteButton.innerText = "x";
     outerDiv.appendChild(deleteButton);
   }
-  function CreateDragButton(outerDiv){
+  function CreateDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
     dragButton.style.left = divWidth + 1 + "px";
@@ -104,9 +104,9 @@ docImage.onload = () => {
     dragButton.appendChild(document.createElement('i'));
     dragButton.getElementsByTagName('i')[0].classList.add("fas");
     dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
-    outerDiv.appendChild(dragButton);  
+    outerDiv.appendChild(dragButton);
   }
-  function DragMousedown(e){
+  function DragMousedown(e) {
     moved = false;
     oldDragPosX = e.pageX;
     oldDragPosY = e.pageY;
@@ -154,16 +154,16 @@ docImage.onload = () => {
       // console.log(divToResize);
       const initialRight = divToResize.right;
       if (currentResizer.classList.contains("se")) {
-        SeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+        SeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
       }
       else if (currentResizer.classList.contains("sw")) {
-        SwResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY);
+        SwResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY);
       }
       else if (currentResizer.classList.contains("ne")) {
-        NeResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+        NeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
       }
       else {
-        NwResize(e,divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
+        NwResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag);
       }
       prevX = e.pageX;
       prevY = e.pageY;
@@ -175,7 +175,7 @@ docImage.onload = () => {
       isResizing = false;
     }
   }
-  function CreateResizePoints(newDiv){
+  function CreateResizePoints(newDiv) {
     let res_se = document.createElement('div');
     res_se.classList.add("resizers");
     res_se.classList.add("se");
@@ -193,33 +193,33 @@ docImage.onload = () => {
     res_nw.classList.add("nw");
     newDiv.appendChild(res_nw);
   }
-  function SeResize(e,divToResize, currentDiv, currentDropdown,  prevX, prevY, currentDelete, currentDrag){
+  function SeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-    
+
     currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + "px";
     currentDelete.style.top = currentDrag.style.top = - 5 + "px";
   }
-  function SwResize(e,divToResize, currentDiv, currentDropdown,  prevX, prevY){
+  function SwResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY) {
     //if(divToResize.left < initialRight){ 
-      //console.log(divToResize.left,"l",initialRight,"r");
-      currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
-      currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-      if(parseInt(currentDiv.style.left) ){
-        currentDiv.style.left   = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
-      }
-      else{
-        currentDiv.style.left = e.pageX - prevX + "px";
-      }
+    //console.log(divToResize.left,"l",initialRight,"r");
+    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
+    currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
+    if (parseInt(currentDiv.style.left)) {
+      currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
+    }
+    else {
+      currentDiv.style.left = e.pageX - prevX + "px";
+    }
     //}
   }
-  function NeResize(e,divToResize, currentDiv, currentDropdown,  prevX, prevY, currentDelete, currentDrag){
+  function NeResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     console.log("ne");
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
     //currentDiv.style.top = currentDropdown.style.top = divToResize.top - (prevY - e.pageY) + "px";
   }
-  function NwResize(e,divToResize, currentDiv, currentDropdown,  prevX, prevY, currentDelete, currentDrag){
+  function NwResize(e, divToResize, currentDiv, currentDropdown, prevX, prevY, currentDelete, currentDrag) {
     console.log("nw");
     currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
