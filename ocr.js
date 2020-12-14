@@ -144,18 +144,6 @@ docImage.onload = () => {
     res_se.classList.add("resizers");
     res_se.classList.add("se");
     newDiv.appendChild(res_se);
-    let res_ne = document.createElement('div');
-    res_ne.classList.add("resizers");
-    res_ne.classList.add("ne");
-    newDiv.appendChild(res_ne);
-    let res_sw = document.createElement('div');
-    res_sw.classList.add("resizers");
-    res_sw.classList.add("sw");
-    newDiv.appendChild(res_sw);
-    let res_nw = document.createElement('div');
-    res_nw.classList.add("resizers");
-    res_nw.classList.add("nw");
-    newDiv.appendChild(res_nw);
   }
   function ResizeDiv() {
     const resizers = document.querySelectorAll(".resizers");
@@ -181,15 +169,6 @@ docImage.onload = () => {
     if (currentResizer.classList.contains("se")) {
       SeResize(e, divToResize);
     }
-    else if (currentResizer.classList.contains("sw")) {
-      SwResize(e, divToResize, initialRight);
-    }
-    else if (currentResizer.classList.contains("ne")) {
-      NeResize(e, divToResize);
-    }
-    else {
-      NwResize(e, divToResize);
-    }
     prevX = e.pageX;
     prevY = e.pageY;
   }
@@ -207,46 +186,5 @@ docImage.onload = () => {
     console.log(divToResize, "2");
     
   }
-  function SwResize(e, divToResize, initialRight) {
-      currentDiv.style.width = currentDropdown.style.width = outerDiv.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
-      currentDiv.style.height = currentDropdown.style.height = outerDiv.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-      
-      if (parseInt(currentDiv.style.left)) {
-        currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
-      }
-      else {
-        currentDiv.style.left = e.pageX - prevX + "px";
-        console.log(divToResize, "1");
-    }
-  }
-  function NeResize(e, divToResize) {
-    console.log("ne");
-    currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
-    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) - 2 + "px";
-
-    currentDelete.style.left = currentDrag.style.left = divToResize.width - (prevX - e.pageX) + 1 + "px";
-    currentDelete.style.top = currentDrag.style.top = - (prevY - e.pageY) - 5 + "px";
-    if (parseInt(currentDiv.style.top)) {
-      currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
-    }
-    else {
-      currentDiv.style.top = e.pageY - prevY + "px";
-    }
-  }
-  function NwResize(e, divToResize) {
-    console.log("nw");
-    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
-    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) - 2 + "px";
-
-    currentDelete.style.top = currentDrag.style.top = - (prevY - e.pageY) - 5 + "px";
-    if (parseInt(currentDiv.style.top)) {
-      currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
-      currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
-    }
-    else {
-      currentDiv.style.top = e.pageY - prevY + "px";
-      currentDiv.style.left = e.pageX - prevX + "px";
-    }
-  }
 };
-
+docImage.src = "doc1.jpg";
