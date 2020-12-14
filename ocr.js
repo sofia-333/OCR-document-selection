@@ -37,7 +37,7 @@ docImage.onload = () => {
       //if(!created) - means that new dropdown won't be created when click on div
       if (newDiv.style.height !== "" && newDiv.style.width !== "" && !created) {
         CreateDropdown(newDiv);
-        //click on delete button
+        //deleting
         CreateDeleteButton(outerDiv);
         DeleteDiv(container);
         //dragging
@@ -177,7 +177,6 @@ docImage.onload = () => {
   }
   function ResizeMousemove(e) {
     const divToResize = currentDiv.getBoundingClientRect();
-    // console.log(divToResize);
     const initialRight = divToResize.right;
     if (currentResizer.classList.contains("se")) {
       SeResize(e, divToResize);
@@ -202,28 +201,31 @@ docImage.onload = () => {
   function SeResize(e, divToResize) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-
-    currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + "px";
-    currentDelete.style.top = currentDrag.style.top = - 5 + "px";
+    
+    currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + (prevX - e.pageX) + "px";
+    currentDelete.style.top = currentDrag.style.top = - 5  - (prevY - e.pageY) + "px";
+    console.log(divToResize, "2");
+    
   }
   function SwResize(e, divToResize, initialRight) {
-    //if(divToResize.left < initialRight){ 
-    //console.log(divToResize.left,"l",initialRight,"r");
-    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
-    currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
-    // currentDiv.style.right = currentDropdown.style.right = initialRight;
-    if (parseInt(currentDiv.style.left)) {
-      currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
+      currentDiv.style.width = currentDropdown.style.width = outerDiv.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
+      currentDiv.style.height = currentDropdown.style.height = outerDiv.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
+      
+      if (parseInt(currentDiv.style.left)) {
+        currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
+      }
+      else {
+        currentDiv.style.left = e.pageX - prevX + "px";
+        console.log(divToResize, "1");
     }
-    else {
-      currentDiv.style.left = e.pageX - prevX + "px";
-    }
-    //}
   }
   function NeResize(e, divToResize) {
     console.log("ne");
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) - 2 + "px";
+
+    currentDelete.style.left = currentDrag.style.left = divToResize.width - (prevX - e.pageX) + 1 + "px";
+    currentDelete.style.top = currentDrag.style.top = - (prevY - e.pageY) - 5 + "px";
     if (parseInt(currentDiv.style.top)) {
       currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
     }
@@ -233,8 +235,10 @@ docImage.onload = () => {
   }
   function NwResize(e, divToResize) {
     console.log("nw");
-    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) + "px";
-    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) + "px";
+    currentDiv.style.width = currentDropdown.style.width = divToResize.width + (prevX - e.pageX) - 2 + "px";
+    currentDiv.style.height = currentDropdown.style.height = divToResize.height + (prevY - e.pageY) - 2 + "px";
+
+    currentDelete.style.top = currentDrag.style.top = - (prevY - e.pageY) - 5 + "px";
     if (parseInt(currentDiv.style.top)) {
       currentDiv.style.top = parseInt(currentDiv.style.top) - (prevY - e.pageY) + "px";
       currentDiv.style.left = parseInt(currentDiv.style.left) - (prevX - e.pageX) + "px";
