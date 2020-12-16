@@ -102,6 +102,7 @@ docImage.onload = () => {
       });
     });
   }
+  
   function createDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
