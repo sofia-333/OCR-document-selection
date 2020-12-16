@@ -34,7 +34,7 @@ docImage.onload = () => {
 
       }
     };
-    window.onmouseup = function (e) {
+    document.onmouseup = function (e) {
       //if(!created) - means that new dropdown won't be created when click on div
       if (newDiv.style.height !== "" && newDiv.style.width !== "" && !created) {
         createDropdown(newDiv);
@@ -44,7 +44,11 @@ docImage.onload = () => {
         //dragging
         createDragButton(outerDiv);
         const dragButtons = document.querySelectorAll(".drag-button");
-        dragButtons.forEach(btn => btn.addEventListener('mousedown', dragMousedown));
+        document.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains("drag-button") || e.target.classList.contains("fa-arrows-alt")) {
+            dragMousedown(e);
+          }
+        });
         //resizing
         createResizePoints(newDiv);
         resizeDiv();
@@ -94,15 +98,15 @@ docImage.onload = () => {
   }
   function deleteDiv(container) {
     const delButtons = document.querySelectorAll(".delete-button");
-    delButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        if (e.target === btn && btn.parentElement.parentElement === container) {
-          container.removeChild(btn.parentElement);
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains("delete-button")) {
+        if (e.target.parentElement.parentElement === container) {
+          container.removeChild(e.target.parentElement);
         }
-      });
+      }
     });
   }
-  
+
   function createDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
@@ -126,8 +130,8 @@ docImage.onload = () => {
     else if (e.target.tagName === 'I') {
       dragBtnParent = e.target.parentElement.parentElement;
     }
-    window.addEventListener('mousemove', dragMousemove);
-    window.addEventListener('mouseup', dragMouseup);
+    document.addEventListener('mousemove', dragMousemove);
+    document.addEventListener('mouseup', dragMouseup);
   }
   function dragMousemove(e) {
     if (!moved && !isResizing) {
