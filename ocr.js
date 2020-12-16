@@ -1,11 +1,12 @@
+import Stack from "./stack.js";
 const submitButton = document.getElementById("submitButton");
 const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
-let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv;
+let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv, divNumber = 0;
 let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY, isResizing;
-const dataToSend = new Array;
-let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag, prevX, prevY;
+const dataToSend = new Array, undoStack = new Stack, redoStack = new Stack;
+let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag, prevX, prevY, outerDivCopy, before_after = new Array;;
 
 docImage.onload = () => {
   // div which will be covering the image
@@ -125,9 +126,9 @@ docImage.onload = () => {
       dragBtnParent = e.target.parentElement.parentElement;
     }
     window.addEventListener('mousemove', dragMousemove);
-    window.addEventListener('mouseup', (e) => {moved = true;});
+    window.addEventListener('mouseup', dragMouseup);
   }
-  function dragMousemove(e){
+  function dragMousemove(e) {
     if (!moved && !isResizing) {
       dragPosX = oldDragPosX - e.pageX;
       dragPosY = oldDragPosY - e.pageY;
@@ -136,6 +137,9 @@ docImage.onload = () => {
       dragBtnParent.style.left = dragBtnParent.offsetLeft - dragPosX + "px";
       dragBtnParent.style.top = dragBtnParent.offsetTop - dragPosY + "px";
     }
+  }
+  function dragMouseup(e) {
+    moved = true;
   }
   function createResizePoints(newDiv) {
     let res_se = document.createElement('div');
