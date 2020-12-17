@@ -138,8 +138,10 @@ docImage.onload = () => {
     else if (e.target.tagName === 'I') {
       dragBtnParent = e.target.parentElement.parentElement;
     }
-    // before_after[0] = dragBtnParent.cloneNode();
-    // before_after[1] = dragBtnParent.innerHTML;
+    before_after = [];
+    before_after[0] = dragBtnParent.cloneNode();
+    before_after[1] = dragBtnParent.innerHTML;
+
     document.addEventListener('mousemove', dragMousemove);
     document.addEventListener('mouseup', dragMouseup);
 
@@ -155,11 +157,14 @@ docImage.onload = () => {
     }
   }
   function dragMouseup(e) {
-    moved = true;
-    // before_after[2] = dragBtnParent.cloneNode();
-    // before_after[3] = dragBtnParent.innerHTML;
-    // redoStack.clear();
-    // undoStack.push(before_after);
+    if (!moved) {
+      moved = true;
+      before_after[2] = dragBtnParent.cloneNode();
+      before_after[3] = dragBtnParent.innerHTML;
+      redoStack.clear();
+      undoStack.push(before_after);
+      console.log(undoStack);
+    }
   }
   function createResizePoints(newDiv) {
     let res_se = document.createElement('div');
@@ -215,19 +220,19 @@ docImage.onload = () => {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
       let poppedElem = undoStack.pop();
-      console.log(poppedElem[0]);
+
       redoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
       //deleting outer div ,which is in the undoStack, from document
       //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
-      if (poppedElem[2] !== 0 && document.getElementById(poppedElem[2].id)) {
+      if (poppedElem[2] !== 0) {
         container.removeChild(document.getElementById(poppedElem[2].id));
       }
       if (poppedElem[0] !== 0) {
         poppedElem[0].innerHTML = poppedElem[1];
         container.appendChild(poppedElem[0]);
       }
+      console.log("undoStack", undoStack)
     }
-    console.log("undoStack", undoStack)
   }
   function redo() {
     console.log("redo pressed");
