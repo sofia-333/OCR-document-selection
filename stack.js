@@ -1,18 +1,21 @@
 export default class Stack {
-  constructor(){
+  constructor() {
     this.stack = [];
   }
 
-  push(el){
+  push(el) {
     this.stack.push(el)
   }
 
-  pop(){
-    if(this.isEmpty()) return 'Stack is empty';
+  pop() {
     return this.stack.pop();
   }
-  
-  isEmpty(){
+
+  isEmpty() {
     return !this.stack.length;
+  }
+
+  clear() {
+    return this.stack = [];
   }
 }

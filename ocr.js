@@ -56,6 +56,7 @@ docImage.onload = () => {
         resizeDiv();
         created = true; //new red div is created
 
+        redoStack.clear();
         undoStack.push([0, 0, outerDiv.cloneNode(), outerDiv.innerHTML]);
         // console.log(undoStack.stack);
         // let temp = undoStack.stack[0][2]
@@ -206,20 +207,33 @@ docImage.onload = () => {
   }
   function undo() {
     console.log("undo pressed");
-    const el = undoStack.pop();
-    redoStack.push([el[2], el[3], el[0], el[1]]);
-    console.log(undoStack);
-    console.log(redoStack, before);
-    //deleting outer div ,which is in the undoStack, from document
-    container.removeChild(document.getElementById(el[2].id));
-    if (el[0] !== 0) {
-      el[0].innerHTML = el[1];
-      el[0].classList.add("fjn");
-      container.appendChild(el[2]);
+    if (!undoStack.isEmpty()) {
+      let poppedElem = undoStack.pop();
+      redoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
+      //deleting outer div ,which is in the undoStack, from document
+      //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
+      if (poppedElem[2] !== 0) {
+        container.removeChild(document.getElementById(poppedElem[2].id));
+      }
+      if (poppedElem[0] !== 0) {
+        poppedElem[0].innerHTML = poppedElem[1];
+        container.appendChild(poppedElem[0]);
+      }
     }
   }
   function redo() {
-
+    console.log("redo pressed");
+    if (!redoStack.isEmpty()) {
+      let poppedElem = redoStack.pop();
+      undoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
+      if (poppedElem[2] !== 0) {
+        container.removeChild(document.getElementById(poppedElem[2].id));
+      }
+      if (poppedElem[0] !== 0) {
+        poppedElem[0].innerHTML = poppedElem[1];
+        container.appendChild(poppedElem[0]);
+      }
+    }
   }
 };
 docImage.src = "doc1.jpg";
