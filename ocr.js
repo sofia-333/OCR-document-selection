@@ -8,7 +8,7 @@ const container = document.getElementsByClassName("container")[0];
 let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv, divNumber = 0;
 let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY, isResizing;
 const dataToSend = new Array, undoStack = new Stack, redoStack = new Stack;
-let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag, prevX, prevY, outerDivCopy, before_after = new Array;;
+let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag, prevX, prevY, outerDivCopy, before_after = new Array;
 
 docImage.onload = () => {
   // div which will be covering the image
@@ -57,10 +57,6 @@ docImage.onload = () => {
 
         redoStack.clear();
         undoStack.push([0, 0, outerDiv.cloneNode(), outerDiv.innerHTML]);
-        // console.log(undoStack.stack);
-        // let temp = undoStack.stack[0][2]
-        // temp.innerHTML = undoStack.stack[0][3];
-        // container.appendChild(temp);
       }
       else if (newDiv.style.height === "" && newDiv.style.width === "") {
         container.removeChild(container.lastElementChild);
@@ -109,11 +105,12 @@ docImage.onload = () => {
     outerDiv.appendChild(deleteButton);
   }
   function deleteDiv(container) {
-    const delButtons = document.querySelectorAll(".delete-button");
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains("delete-button")) {
         if (e.target.parentElement.parentElement === container) {
           container.removeChild(e.target.parentElement);
+          redoStack.clear();
+          undoStack.push([e.target.parentElement.cloneNode(), e.target.parentElement.innerHTML, 0, 0]);
         }
       }
     });
@@ -141,8 +138,11 @@ docImage.onload = () => {
     else if (e.target.tagName === 'I') {
       dragBtnParent = e.target.parentElement.parentElement;
     }
+    // before_after[0] = dragBtnParent.cloneNode();
+    // before_after[1] = dragBtnParent.innerHTML;
     document.addEventListener('mousemove', dragMousemove);
     document.addEventListener('mouseup', dragMouseup);
+
   }
   function dragMousemove(e) {
     if (!moved && !isResizing) {
@@ -156,6 +156,10 @@ docImage.onload = () => {
   }
   function dragMouseup(e) {
     moved = true;
+    // before_after[2] = dragBtnParent.cloneNode();
+    // before_after[3] = dragBtnParent.innerHTML;
+    // redoStack.clear();
+    // undoStack.push(before_after);
   }
   function createResizePoints(newDiv) {
     let res_se = document.createElement('div');
@@ -211,10 +215,11 @@ docImage.onload = () => {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
       let poppedElem = undoStack.pop();
+      console.log(poppedElem[0]);
       redoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
       //deleting outer div ,which is in the undoStack, from document
       //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
-      if (poppedElem[2] !== 0) {
+      if (poppedElem[2] !== 0 && document.getElementById(poppedElem[2].id)) {
         container.removeChild(document.getElementById(poppedElem[2].id));
       }
       if (poppedElem[0] !== 0) {
@@ -222,6 +227,7 @@ docImage.onload = () => {
         container.appendChild(poppedElem[0]);
       }
     }
+    console.log("undoStack", undoStack)
   }
   function redo() {
     console.log("redo pressed");
@@ -236,6 +242,7 @@ docImage.onload = () => {
         container.appendChild(poppedElem[0]);
       }
     }
+    console.log("redoStack", redoStack)
   }
 };
 docImage.src = "doc1.jpg";
