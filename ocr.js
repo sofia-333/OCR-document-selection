@@ -1,5 +1,7 @@
 import Stack from "./stack.js";
 const submitButton = document.getElementById("submitButton");
+const undoButton = document.getElementById("undoButton");
+const redoButton = document.getElementById("redoButton");
 const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
@@ -53,11 +55,19 @@ docImage.onload = () => {
         createResizePoints(newDiv);
         resizeDiv();
         created = true; //new red div is created
+
+        undoStack.push([0, 0, outerDiv.cloneNode(), outerDiv.innerHTML]);
+        // console.log(undoStack.stack);
+        // let temp = undoStack.stack[0][2]
+        // temp.innerHTML = undoStack.stack[0][3];
+        // container.appendChild(temp);
       }
       else if (newDiv.style.height === "" && newDiv.style.width === "") {
         container.removeChild(container.lastElementChild);
       }
     };
+    undoButton.addEventListener('click', undo);
+    redoButton.addEventListener('click', redo);
     submitButton.addEventListener('click', (e) => console.log(dataToSend));
   };
   function createDivLayer(docImage) {
@@ -72,6 +82,8 @@ docImage.onload = () => {
     outerDiv.classList.add("outer-div");
     outerDiv.style.left = posX + "px";
     outerDiv.style.top = posY + "px";
+    divNumber++;
+    outerDiv.id = `outerDiv${divNumber}`;
     outerDiv.appendChild(newDiv);
     container.appendChild(outerDiv);
   }
@@ -106,7 +118,6 @@ docImage.onload = () => {
       }
     });
   }
-
   function createDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
@@ -191,6 +202,23 @@ docImage.onload = () => {
     currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + (prevX - e.pageX) + "px";
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
     console.log(divToResize, "2");
+
+  }
+  function undo() {
+    console.log("undo pressed");
+    const el = undoStack.pop();
+    redoStack.push([el[2], el[3], el[0], el[1]]);
+    console.log(undoStack);
+    console.log(redoStack, before);
+    //deleting outer div ,which is in the undoStack, from document
+    container.removeChild(document.getElementById(el[2].id));
+    if (el[0] !== 0) {
+      el[0].innerHTML = el[1];
+      el[0].classList.add("fjn");
+      container.appendChild(el[2]);
+    }
+  }
+  function redo() {
 
   }
 };

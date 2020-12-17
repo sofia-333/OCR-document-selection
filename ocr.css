@@ -14,7 +14,7 @@
   position: absolute;
   /* background-color: transparent; */
 }
-#submitButton{
+#submitButton, #undoButton, #redoButton{
   position: relative;
   left: 80%;
 }
