@@ -45,7 +45,6 @@ docImage.onload = () => {
         deleteDiv(container);
         //dragging
         createDragButton(outerDiv);
-        const dragButtons = document.querySelectorAll(".drag-button");
         document.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains("drag-button") || e.target.classList.contains("fa-arrows-alt")) {
             dragMousedown(e);
@@ -165,8 +164,11 @@ docImage.onload = () => {
     newDiv.appendChild(res_se);
   }
   function resizeDiv() {
-    const resizers = document.querySelectorAll(".resizers");
-    resizers.forEach((resizer) => resizer.addEventListener("mousedown", resizeMousedown));
+    document.addEventListener("mousedown", (e) => {
+      if (e.target.classList.contains("resizers"))
+        resizeMousedown(e);
+    }
+    );
   }
   function resizeMousedown(e) {
     currentResizer = e.target;
