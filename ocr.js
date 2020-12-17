@@ -163,7 +163,6 @@ docImage.onload = () => {
       before_after[3] = dragBtnParent.innerHTML;
       redoStack.clear();
       undoStack.push(before_after);
-      console.log(undoStack);
     }
   }
   function createResizePoints(newDiv) {
@@ -185,10 +184,13 @@ docImage.onload = () => {
     currentDropdown = e.target.parentElement.getElementsByClassName("dropdown")[0];
     currentDelete = e.target.parentElement.parentElement.getElementsByClassName("delete-button")[0];
     currentDrag = e.target.parentElement.parentElement.getElementsByClassName("drag-button")[0];
-
     isResizing = true;
     prevX = e.pageX;
     prevY = e.pageY;
+
+    before_after = [];
+    before_after[0] = currentDiv.parentElement.cloneNode();
+    before_after[1] = currentDiv.parentElement.innerHTML;
 
     window.addEventListener("mousemove", resizeMousemove);
     window.addEventListener("mouseup", resizeMouseup);
@@ -206,6 +208,10 @@ docImage.onload = () => {
     window.removeEventListener("mousemove", resizeMousemove);
     window.removeEventListener("mouseup", resizeMouseup);
     isResizing = false;
+    before_after[2] = currentDiv.parentElement.cloneNode();
+    before_after[3] = currentDiv.parentElement.innerHTML;
+    redoStack.clear();
+    undoStack.push(before_after);
   }
   function seResize(e, divToResize) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
@@ -213,8 +219,6 @@ docImage.onload = () => {
 
     currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + (prevX - e.pageX) + "px";
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
-    console.log(divToResize, "2");
-
   }
   function undo() {
     console.log("undo pressed");
@@ -225,6 +229,9 @@ docImage.onload = () => {
       //deleting outer div ,which is in the undoStack, from document
       //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
       if (poppedElem[2] !== 0) {
+        console.log(poppedElem[2].id);
+        console.log(container);
+        console.log(document.getElementById(poppedElem[2].id));
         container.removeChild(document.getElementById(poppedElem[2].id));
       }
       if (poppedElem[0] !== 0) {
