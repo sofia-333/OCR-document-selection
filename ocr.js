@@ -126,11 +126,11 @@ docImage.onload = () => {
         before_after[4] = _outerDivCopy.innerHTML;
         before_after[5] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown after change
         undoStack.push(before_after);
-        console.log(before_after);
       };
 
     };
   }
+
   function createDeleteButton(outerDiv) {
     const deleteButton = document.createElement('button');
     deleteButton.classList.add("delete-button");
@@ -139,17 +139,21 @@ docImage.onload = () => {
     deleteButton.innerText = "x";
     outerDiv.appendChild(deleteButton);
   }
+
   function deleteDiv(container) {
     document.addEventListener('click', (e) => {
+      let _outerDivCopy = e.target.parentElement;
       if (e.target.classList.contains("delete-button")) {
-        if (e.target.parentElement.parentElement === container) {
-          container.removeChild(e.target.parentElement);
+        if (_outerDivCopy.parentElement === container) {
+          container.removeChild(_outerDivCopy);
+          let _dropDownCopy = _outerDivCopy.getElementsByClassName("new-div")[0].firstChild;
           redoStack.clear();
-          undoStack.push([e.target.parentElement.cloneNode(), e.target.parentElement.innerHTML, 0, 0]);
+          undoStack.push([_outerDivCopy.cloneNode(), _outerDivCopy.innerHTML, _dropDownCopy.selectedIndex, 0, 0, 0]);
         }
       }
     });
   }
+
   function createDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
@@ -161,6 +165,7 @@ docImage.onload = () => {
     dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
     outerDiv.appendChild(dragButton);
   }
+
   function dragMousedown(e) {
     moved = false;
     oldDragPosX = e.pageX;
@@ -173,14 +178,17 @@ docImage.onload = () => {
     else if (e.target.tagName === 'I') {
       dragBtnParent = e.target.parentElement.parentElement;
     }
+    let _dropDownCopy = dragBtnParent.getElementsByClassName("new-div")[0].firstChild;
     before_after = [];
     before_after[0] = dragBtnParent.cloneNode();
     before_after[1] = dragBtnParent.innerHTML;
+    before_after[2] = _dropDownCopy.selectedIndex;
 
     document.addEventListener('mousemove', dragMousemove);
     document.addEventListener('mouseup', dragMouseup);
 
   }
+
   function dragMousemove(e) {
     if (!moved && !isResizing) {
       dragPosX = oldDragPosX - e.pageX;
@@ -191,21 +199,26 @@ docImage.onload = () => {
       dragBtnParent.style.top = dragBtnParent.offsetTop - dragPosY + "px";
     }
   }
+
   function dragMouseup(e) {
     if (!moved) {
       moved = true;
-      before_after[2] = dragBtnParent.cloneNode();
-      before_after[3] = dragBtnParent.innerHTML;
+      let _dropDownCopy = dragBtnParent.getElementsByClassName("new-div")[0].firstChild;
+      before_after[3] = dragBtnParent.cloneNode();
+      before_after[4] = dragBtnParent.innerHTML;
+      before_after[5] = _dropDownCopy.selectedIndex;
       redoStack.clear();
       undoStack.push(before_after);
     }
   }
+
   function createResizePoints(newDiv) {
     let res_se = document.createElement('div');
     res_se.classList.add("resizers");
     res_se.classList.add("se");
     newDiv.appendChild(res_se);
   }
+
   function resizeDiv() {
     document.addEventListener("mousedown", (e) => {
       if (e.target.classList.contains("resizers"))
@@ -213,6 +226,7 @@ docImage.onload = () => {
     }
     );
   }
+
   function resizeMousedown(e) {
     currentResizer = e.target;
     currentDiv = e.target.parentElement;
@@ -226,10 +240,12 @@ docImage.onload = () => {
     before_after = [];
     before_after[0] = currentDiv.parentElement.cloneNode();
     before_after[1] = currentDiv.parentElement.innerHTML;
+    before_after[2] = currentDropdown.selectedIndex;
 
     window.addEventListener("mousemove", resizeMousemove);
     window.addEventListener("mouseup", resizeMouseup);
   }
+
   function resizeMousemove(e) {
     const divToResize = currentDiv.getBoundingClientRect();
     const initialRight = divToResize.right;
@@ -239,15 +255,18 @@ docImage.onload = () => {
     prevX = e.pageX;
     prevY = e.pageY;
   }
+
   function resizeMouseup() {
     window.removeEventListener("mousemove", resizeMousemove);
     window.removeEventListener("mouseup", resizeMouseup);
     isResizing = false;
-    before_after[2] = currentDiv.parentElement.cloneNode();
-    before_after[3] = currentDiv.parentElement.innerHTML;
+    before_after[3] = currentDiv.parentElement.cloneNode();
+    before_after[4] = currentDiv.parentElement.innerHTML;
+    before_after[5] = currentDropdown.selectedIndex;
     redoStack.clear();
     undoStack.push(before_after);
   }
+
   function seResize(e, divToResize) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
     currentDiv.style.height = currentDropdown.style.height = divToResize.height - (prevY - e.pageY) - 2 + "px";
@@ -256,22 +275,6 @@ docImage.onload = () => {
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
   }
 
-  // function selectCheck() {
-  //   const dropdowns = document.querySelectorAll(".dropdown");
-
-  //   // dropdowns.forEach( dropdown => dropdown.addEventListener('focus', e => {
-
-  //     e.target.addEventListener('change', e => {
-  //       if(initialIndex !== e.target.selectedIndex && !selected){
-  //         before_after[2] = e.target.parentElement.parentElement.cloneNode();
-  //         before_after[3] = e.target.parentElement.parentElement.innerHTML;
-  //         // console.log("changed",e.target.selectedIndex);
-  //         undoStack.push(before_after);
-  //         // console.log( undoStack);
-  //         selected = true;
-  //       }
-  //     });
-  //   // }));
   function undo() {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
@@ -292,6 +295,7 @@ docImage.onload = () => {
       console.log("undoStack", undoStack)
     }
   }
+
   function redo() {
     console.log("redo pressed");
     if (!redoStack.isEmpty()) {
