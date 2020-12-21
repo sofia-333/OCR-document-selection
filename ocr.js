@@ -5,8 +5,8 @@ const redoButton = document.getElementById("redoButton");
 const deleteButton = document.getElementById("deleteButton");
 const docImage = document.getElementsByClassName("doc-image")[0];
 const container = document.getElementsByClassName("container")[0];
-let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv, divNumber = 0;
-let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY, isResizing,selected = true;
+let posX, posY, newDiv, created = true, x1, y1, divHeight, divWidth, divLayer, outerDiv, divNumber = 0, dropdown;
+let dragBtnParent, moved = true, dragPosX, dragPosY, oldDragPosX, oldDragPosY, isResizing, selected = true;
 const dataToSend = new Array, undoStack = new Stack, redoStack = new Stack;
 let currentResizer, currentDropdown, currentDiv, currentDelete, currentDrag, prevX, prevY, outerDivCopy, before_after = new Array;
 
@@ -54,9 +54,8 @@ docImage.onload = () => {
         createResizePoints(newDiv);
         resizeDiv();
         created = true; //new red div is created
-
         redoStack.clear();
-        undoStack.push([0, 0, outerDiv.cloneNode(), outerDiv.innerHTML]);
+        undoStack.push([0, 0, 0, outerDiv.cloneNode(), outerDiv.innerHTML, dropdown.selectedIndex]);
       }
       else if (newDiv.style.height === "" && newDiv.style.width === "") {
         container.removeChild(container.lastElementChild);
@@ -70,7 +69,9 @@ docImage.onload = () => {
       //     previous = this.value;
       //   };
       // });
-      selectCheck();
+
+      // ofa: 
+      // selectCheck();
 
     };
     undoButton.addEventListener('click', undo);
@@ -95,17 +96,40 @@ docImage.onload = () => {
     container.appendChild(outerDiv);
   }
   function createDropdown(newDiv) {
-    const dropdown = document.createElement("select");
+    dropdown = document.createElement("select");
     dropdown.classList.add("dropdown");
     dropdown.style.width = divWidth + "px";
     dropdown.style.height = divHeight + "px";
     for (let i = 0; i < 3; i++) {
       let option = new Option;
       option.text = `something ${i}`;
-      option.value = 'somethings value';
+      option.value = `value${i}`;
       dropdown.options.add(option);
     }
     newDiv.appendChild(dropdown);
+
+    newDiv.onmousedown = e => {
+      let _dropdownCopy = e.target;
+      let _newDivCopy = _dropdownCopy.parentElement;
+      let _outerDivCopy = _newDivCopy.parentElement;
+
+      before_after = [];
+      before_after[0] = _outerDivCopy.cloneNode();
+      before_after[1] = _outerDivCopy.innerHTML;
+      before_after[2] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown before change
+      _dropdownCopy.onchange = e => {
+        let _dropdownCopy = e.target;
+        let _newDivCopy = _dropdownCopy.parentElement;
+        let _outerDivCopy = _newDivCopy.parentElement;
+
+        before_after[3] = _outerDivCopy.cloneNode();
+        before_after[4] = _outerDivCopy.innerHTML;
+        before_after[5] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown after change
+        undoStack.push(before_after);
+        console.log(before_after);
+      };
+
+    };
   }
   function createDeleteButton(outerDiv) {
     const deleteButton = document.createElement('button');
@@ -231,40 +255,38 @@ docImage.onload = () => {
     currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + (prevX - e.pageX) + "px";
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
   }
-  function selectCheck() {
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains("dropdown") && selected) {
-        console.log("kjdfhg");
-        console.log(e.target.parentElement.parentElement);
-        before_after = [];
-        before_after[0] = e.target.parentElement.parentElement.cloneNode();
-        before_after[1] = e.target.parentElement.parentElement.innerHTML;
-        selected = false;
-      }
-    });
-    document.addEventListener('change', (e) => {
-      if (e.target.classList.contains("dropdown") && !selected) {
-        before_after[2] = e.target.parentElement.parentElement.cloneNode();
-        before_after[3] = e.target.parentElement.parentElement.innerHTML;
-        undoStack.push(before_after);
-        console.log(undoStack);
-        selected = true;
-      }
-    });
-  }
+
+  // function selectCheck() {
+  //   const dropdowns = document.querySelectorAll(".dropdown");
+
+  //   // dropdowns.forEach( dropdown => dropdown.addEventListener('focus', e => {
+
+  //     e.target.addEventListener('change', e => {
+  //       if(initialIndex !== e.target.selectedIndex && !selected){
+  //         before_after[2] = e.target.parentElement.parentElement.cloneNode();
+  //         before_after[3] = e.target.parentElement.parentElement.innerHTML;
+  //         // console.log("changed",e.target.selectedIndex);
+  //         undoStack.push(before_after);
+  //         // console.log( undoStack);
+  //         selected = true;
+  //       }
+  //     });
+  //   // }));
   function undo() {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
       let poppedElem = undoStack.pop();
 
-      redoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
+      redoStack.push([poppedElem[3], poppedElem[4], poppedElem[5], poppedElem[0], poppedElem[1], poppedElem[2]]);
       //deleting outer div ,which is in the undoStack, from document
       //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
-      if (poppedElem[2] !== 0) {
-        container.removeChild(document.getElementById(poppedElem[2].id));
+      if (poppedElem[3] !== 0) {
+        container.removeChild(document.getElementById(poppedElem[3].id));
       }
       if (poppedElem[0] !== 0) {
         poppedElem[0].innerHTML = poppedElem[1];
+        let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
+        _dropdownCopy.selectedIndex = poppedElem[2];
         container.appendChild(poppedElem[0]);
       }
       console.log("undoStack", undoStack)
@@ -274,12 +296,14 @@ docImage.onload = () => {
     console.log("redo pressed");
     if (!redoStack.isEmpty()) {
       let poppedElem = redoStack.pop();
-      undoStack.push([poppedElem[2], poppedElem[3], poppedElem[0], poppedElem[1]]);
-      if (poppedElem[2] !== 0) {
-        container.removeChild(document.getElementById(poppedElem[2].id));
+      undoStack.push([poppedElem[3], poppedElem[4], poppedElem[5], poppedElem[0], poppedElem[1], poppedElem[2]]);
+      if (poppedElem[3] !== 0) {
+        container.removeChild(document.getElementById(poppedElem[3].id));
       }
       if (poppedElem[0] !== 0) {
         poppedElem[0].innerHTML = poppedElem[1];
+        let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
+        _dropdownCopy.selectedIndex = poppedElem[2];
         container.appendChild(poppedElem[0]);
       }
     }
