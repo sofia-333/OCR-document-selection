@@ -108,27 +108,7 @@ docImage.onload = () => {
     }
     newDiv.appendChild(dropdown);
 
-    newDiv.onmousedown = e => {
-      let _dropdownCopy = e.target;
-      let _newDivCopy = _dropdownCopy.parentElement;
-      let _outerDivCopy = _newDivCopy.parentElement;
-
-      before_after = [];
-      before_after[0] = _outerDivCopy.cloneNode();
-      before_after[1] = _outerDivCopy.innerHTML;
-      before_after[2] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown before change
-      _dropdownCopy.onchange = e => {
-        let _dropdownCopy = e.target;
-        let _newDivCopy = _dropdownCopy.parentElement;
-        let _outerDivCopy = _newDivCopy.parentElement;
-
-        before_after[3] = _outerDivCopy.cloneNode();
-        before_after[4] = _outerDivCopy.innerHTML;
-        before_after[5] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown after change
-        undoStack.push(before_after);
-      };
-
-    };
+    saveSelectCurrentValues(newDiv);
   }
 
   function createDeleteButton(outerDiv) {
@@ -275,6 +255,34 @@ docImage.onload = () => {
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
   }
 
+  function saveSelectCurrentValues(d) {
+    let _newDivCopy = d;
+    _newDivCopy.onmousedown = e => {
+      let _dropdownCopy = e.target;
+      let _newDivCopy = _dropdownCopy.parentElement;
+      let _outerDivCopy = _newDivCopy.parentElement;
+
+      before_after = [];
+      before_after[0] = _outerDivCopy.cloneNode();
+      before_after[1] = _outerDivCopy.innerHTML;
+      before_after[2] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown before change
+      saveSelectChangedValues(_dropdownCopy);
+    };
+  }
+
+  function saveSelectChangedValues(current_dropdownCopy) {
+    current_dropdownCopy.onchange = e => {
+      let _dropdownCopy = e.target;
+      let _newDivCopy = _dropdownCopy.parentElement;
+      let _outerDivCopy = _newDivCopy.parentElement;
+
+      before_after[3] = _outerDivCopy.cloneNode();
+      before_after[4] = _outerDivCopy.innerHTML;
+      before_after[5] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown after change
+      undoStack.push(before_after);
+    }
+  }
+
   function undo() {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
@@ -290,6 +298,7 @@ docImage.onload = () => {
         poppedElem[0].innerHTML = poppedElem[1];
         let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
         _dropdownCopy.selectedIndex = poppedElem[2];
+        saveSelectCurrentValues(poppedElem[0].getElementsByClassName("new-div")[0]);//adding EventListeners
         container.appendChild(poppedElem[0]);
       }
       console.log("undoStack", undoStack)
@@ -308,6 +317,7 @@ docImage.onload = () => {
         poppedElem[0].innerHTML = poppedElem[1];
         let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
         _dropdownCopy.selectedIndex = poppedElem[2];
+        saveSelectCurrentValues(poppedElem[0].getElementsByClassName("new-div")[0]);//adding EventListeners
         container.appendChild(poppedElem[0]);
       }
     }
