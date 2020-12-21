@@ -61,18 +61,6 @@ docImage.onload = () => {
         container.removeChild(container.lastElementChild);
       }
 
-      // var previous;
-      // let h = document.querySelectorAll(".dropdown");
-      // h.forEach(dropdown => {
-      //   dropdown.onfocus = function (event) {
-      //     console.log(event);
-      //     previous = this.value;
-      //   };
-      // });
-
-      // ofa: 
-      // selectCheck();
-
     };
     undoButton.addEventListener('click', undo);
     redoButton.addEventListener('click', redo);
