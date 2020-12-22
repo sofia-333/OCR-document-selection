@@ -66,6 +66,8 @@ docImage.onload = () => {
     redoButton.addEventListener('click', redo);
     submitButton.addEventListener('click', (e) => console.log(dataToSend));
   };
+
+
   function createDivLayer(docImage) {
     divLayer = document.getElementsByClassName("div-layer")[0];
     divLayer.style.width = docImage.width + "px";
@@ -73,6 +75,8 @@ docImage.onload = () => {
     divLayer.x = docImage.x;
     divLayer.y = docImage.y;
   }
+
+
   function createOuterDiv(newDiv) {
     outerDiv = document.createElement('div');
     outerDiv.classList.add("outer-div");
@@ -83,6 +87,8 @@ docImage.onload = () => {
     outerDiv.appendChild(newDiv);
     container.appendChild(outerDiv);
   }
+
+
   function createDropdown(newDiv) {
     dropdown = document.createElement("select");
     dropdown.classList.add("dropdown");
@@ -99,6 +105,7 @@ docImage.onload = () => {
     saveSelectCurrentIndexes(newDiv);
   }
 
+
   function createDeleteButton(outerDiv) {
     const deleteButton = document.createElement('button');
     deleteButton.classList.add("delete-button");
@@ -107,6 +114,7 @@ docImage.onload = () => {
     deleteButton.innerText = "x";
     outerDiv.appendChild(deleteButton);
   }
+
 
   function deleteDiv(container) {
     document.addEventListener('click', (e) => {
@@ -122,6 +130,7 @@ docImage.onload = () => {
     });
   }
 
+
   function createDragButton(outerDiv) {
     const dragButton = document.createElement('button');
     dragButton.classList.add("drag-button");
@@ -133,6 +142,7 @@ docImage.onload = () => {
     dragButton.getElementsByTagName('i')[0].classList.add("fa-arrows-alt");
     outerDiv.appendChild(dragButton);
   }
+
 
   function dragMousedown(e) {
     moved = false;
@@ -157,6 +167,7 @@ docImage.onload = () => {
 
   }
 
+
   function dragMousemove(e) {
     if (!moved && !isResizing) {
       dragPosX = oldDragPosX - e.pageX;
@@ -168,6 +179,7 @@ docImage.onload = () => {
     }
   }
 
+
   function dragMouseup(e) {
     if (!moved) {
       moved = true;
@@ -175,10 +187,14 @@ docImage.onload = () => {
       before_after[3] = dragBtnParent.cloneNode();
       before_after[4] = dragBtnParent.innerHTML;
       before_after[5] = _dropDownCopy.selectedIndex;
-      redoStack.clear();
-      undoStack.push(before_after);
+      //checking if it really changed the position
+      if (before_after[0].style.top !== before_after[3].style.top || before_after[0].style.left !== before_after[3].style.left) { 
+        redoStack.clear();
+        undoStack.push(before_after);
+      }
     }
   }
+
 
   function createResizePoints(newDiv) {
     let res_se = document.createElement('div');
@@ -187,6 +203,7 @@ docImage.onload = () => {
     newDiv.appendChild(res_se);
   }
 
+
   function resizeDiv() {
     document.addEventListener("mousedown", (e) => {
       if (e.target.classList.contains("resizers"))
@@ -194,6 +211,7 @@ docImage.onload = () => {
     }
     );
   }
+
 
   function resizeMousedown(e) {
     currentResizer = e.target;
@@ -214,6 +232,7 @@ docImage.onload = () => {
     window.addEventListener("mouseup", resizeMouseup);
   }
 
+
   function resizeMousemove(e) {
     const divToResize = currentDiv.getBoundingClientRect();
     const initialRight = divToResize.right;
@@ -224,16 +243,20 @@ docImage.onload = () => {
     prevY = e.pageY;
   }
 
-  function resizeMouseup() {
+
+  function resizeMouseup(e) {
     window.removeEventListener("mousemove", resizeMousemove);
     window.removeEventListener("mouseup", resizeMouseup);
     isResizing = false;
     before_after[3] = currentDiv.parentElement.cloneNode();
     before_after[4] = currentDiv.parentElement.innerHTML;
     before_after[5] = currentDropdown.selectedIndex;
-    redoStack.clear();
-    undoStack.push(before_after);
+    if (before_after[1] !== before_after[4]) { //checking if it really changed the position
+      redoStack.clear();
+      undoStack.push(before_after);
+    }
   }
+
 
   function seResize(e, divToResize) {
     currentDiv.style.width = currentDropdown.style.width = divToResize.width - (prevX - e.pageX) - 2 + "px";
@@ -242,6 +265,7 @@ docImage.onload = () => {
     currentDelete.style.left = currentDrag.style.left = divToResize.width + 1 + (prevX - e.pageX) + "px";
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
   }
+
 
   function saveSelectCurrentIndexes(current_newDivCopy) {
     let _newDivCopy = current_newDivCopy;
@@ -258,6 +282,7 @@ docImage.onload = () => {
     };
   }
 
+
   function saveSelectChangedIndexes(current_dropdownCopy) {
     current_dropdownCopy.onchange = e => {
       let _dropdownCopy = e.target;
@@ -272,6 +297,7 @@ docImage.onload = () => {
     }
   }
 
+
   function undo() {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
@@ -283,6 +309,7 @@ docImage.onload = () => {
     }
   }
 
+
   function redo() {
     console.log("redo pressed");
     if (!redoStack.isEmpty()) {
@@ -293,6 +320,7 @@ docImage.onload = () => {
       console.log("redoStack", redoStack);
     }
   }
+
 
   function placeElementFromStackToDocument(poppedElem) {
     //deleting outer div ,which is in the undoStack, from document
@@ -309,5 +337,6 @@ docImage.onload = () => {
       container.appendChild(poppedElem[0]);
     }
   }
+
 };
 docImage.src = "doc1.jpg";
