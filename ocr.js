@@ -96,7 +96,7 @@ docImage.onload = () => {
     }
     newDiv.appendChild(dropdown);
 
-    saveSelectCurrentValues(newDiv);
+    saveSelectCurrentIndexes(newDiv);
   }
 
   function createDeleteButton(outerDiv) {
@@ -243,8 +243,8 @@ docImage.onload = () => {
     currentDelete.style.top = currentDrag.style.top = - 5 - (prevY - e.pageY) + "px";
   }
 
-  function saveSelectCurrentValues(d) {
-    let _newDivCopy = d;
+  function saveSelectCurrentIndexes(current_newDivCopy) {
+    let _newDivCopy = current_newDivCopy;
     _newDivCopy.onmousedown = e => {
       let _dropdownCopy = e.target;
       let _newDivCopy = _dropdownCopy.parentElement;
@@ -254,11 +254,11 @@ docImage.onload = () => {
       before_after[0] = _outerDivCopy.cloneNode();
       before_after[1] = _outerDivCopy.innerHTML;
       before_after[2] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown before change
-      saveSelectChangedValues(_dropdownCopy);
+      saveSelectChangedIndexes(_dropdownCopy);
     };
   }
 
-  function saveSelectChangedValues(current_dropdownCopy) {
+  function saveSelectChangedIndexes(current_dropdownCopy) {
     current_dropdownCopy.onchange = e => {
       let _dropdownCopy = e.target;
       let _newDivCopy = _dropdownCopy.parentElement;
@@ -267,6 +267,7 @@ docImage.onload = () => {
       before_after[3] = _outerDivCopy.cloneNode();
       before_after[4] = _outerDivCopy.innerHTML;
       before_after[5] = _dropdownCopy.selectedIndex;//remember index of selected option dropdown after change
+      redoStack.clear();
       undoStack.push(before_after);
     }
   }
@@ -275,21 +276,10 @@ docImage.onload = () => {
     console.log("undo pressed");
     if (!undoStack.isEmpty()) {
       let poppedElem = undoStack.pop();
-
       redoStack.push([poppedElem[3], poppedElem[4], poppedElem[5], poppedElem[0], poppedElem[1], poppedElem[2]]);
-      //deleting outer div ,which is in the undoStack, from document
-      //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
-      if (poppedElem[3] !== 0) {
-        container.removeChild(document.getElementById(poppedElem[3].id));
-      }
-      if (poppedElem[0] !== 0) {
-        poppedElem[0].innerHTML = poppedElem[1];
-        let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
-        _dropdownCopy.selectedIndex = poppedElem[2];
-        saveSelectCurrentValues(poppedElem[0].getElementsByClassName("new-div")[0]);//adding EventListeners
-        container.appendChild(poppedElem[0]);
-      }
-      console.log("undoStack", undoStack)
+
+      placeElementFromStackToDocument(poppedElem);
+      console.log("undoStack", undoStack);
     }
   }
 
@@ -298,18 +288,26 @@ docImage.onload = () => {
     if (!redoStack.isEmpty()) {
       let poppedElem = redoStack.pop();
       undoStack.push([poppedElem[3], poppedElem[4], poppedElem[5], poppedElem[0], poppedElem[1], poppedElem[2]]);
-      if (poppedElem[3] !== 0) {
-        container.removeChild(document.getElementById(poppedElem[3].id));
-      }
-      if (poppedElem[0] !== 0) {
-        poppedElem[0].innerHTML = poppedElem[1];
-        let _dropdownCopy = poppedElem[0].getElementsByClassName("new-div")[0].firstChild;
-        _dropdownCopy.selectedIndex = poppedElem[2];
-        saveSelectCurrentValues(poppedElem[0].getElementsByClassName("new-div")[0]);//adding EventListeners
-        container.appendChild(poppedElem[0]);
-      }
+
+      placeElementFromStackToDocument(poppedElem);
+      console.log("redoStack", redoStack);
     }
-    console.log("redoStack", redoStack)
+  }
+
+  function placeElementFromStackToDocument(poppedElem) {
+    //deleting outer div ,which is in the undoStack, from document
+    //remove only if exists(undo after deleting, for example, this element won't exist poppedElem[2] === 0)
+    if (poppedElem[3] !== 0) {
+      container.removeChild(document.getElementById(poppedElem[3].id));
+    }
+    if (poppedElem[0] !== 0) {
+      poppedElem[0].innerHTML = poppedElem[1];
+      let _newDivCopy = poppedElem[0].getElementsByClassName("new-div")[0];
+      let _dropdownCopy = _newDivCopy.firstChild;
+      _dropdownCopy.selectedIndex = poppedElem[2];
+      saveSelectCurrentIndexes(_newDivCopy);//adding EventListeners in this function
+      container.appendChild(poppedElem[0]);
+    }
   }
 };
 docImage.src = "doc1.jpg";
